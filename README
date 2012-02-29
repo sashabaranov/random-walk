@@ -1,0 +1,15 @@
+This repo is for my coursework on Random Walk(https://en.wikipedia.org/wiki/Random_walk).
+Alternative name is Drunkard's Walk(https://en.wikipedia.org/wiki/Drunkard%27s_Walk).
+
+This problem is connected with solving Schrödinger equation with random potential.
+It could describe:
+a) Distribution of electric current in the crystal with defects.
+b) Measurement of particle location and problem of wavefunction reduction.
+
+Generalization of this problem on space with arbitrary dimensionality gives us some relatively simple parallels with results of String Theory. 
+
+
+Task is to form probability distribution and try to describe Drunkard's wavefunction.
+
+
+I'll use OpenMP because one adress-space is better in this task.
