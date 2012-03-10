@@ -65,20 +65,18 @@ int main(int argc, char *argv[])
 
         for(i = a; i < b; ++i)
         {
-            printf("%d: on gen %d - %d\n", tid, i, grid_size);
+            //printf("%d: on gen %d - %d\n", tid, i, grid_size);
 
             #pragma omp single
             {
                 // add new cops generation
                 for(j = 0; j < i; ++j) add_cop(grid, grid_size, state, i);
-
-                printf("%d: Added cops\n", tid);
             }
 
             //simulate
             for(j = 0; j < M/threads_num; ++j)
             {
-                printf("%d: Simulating %d\n", tid, i);
+                //printf("%d: Simulating %d\n", tid, i);
                 while(1)
                 {
                     //printf("%d: Offset %d\n", tid, offset);
@@ -92,8 +90,9 @@ int main(int argc, char *argv[])
 
                     if(offset == grid_size) 
                     {
-                        printf("%d: Exiting: %d\n", tid, offset);
-                        stats[i] += 1;
+                       
+                        stats[i-a] += 1;
+                        //printf("%d: Exiting: %d - %d \n", i, offset, stats[i]);
                         break;
                     }
                 }
@@ -102,9 +101,10 @@ int main(int argc, char *argv[])
     }
     #pragma omp end parallel
 
+    printf("STATS:\n");
     for(i = 0; i < (b-a); i++)
     {
-        printf("%d %d\n", a+i, stats[i]);
+        printf("%d %d/%d\n", a+i, stats[i], M/omp_get_num_threads());
     }
 
     double end = omp_get_wtime();
