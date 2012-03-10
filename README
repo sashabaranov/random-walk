@@ -13,3 +13,6 @@ Task is to form probability distribution and try to describe Drunkard's wavefunc
 
 
 I'll use OpenMP because one adress-space is better in this task.
+
+
+USEFUL: http://www.evanjones.ca/random-thread-safe.html
