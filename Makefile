@@ -1,5 +1,5 @@
 build:
-	gcc -fopenmp -lm -o random-walk main.c 
+	gcc -g -fopenmp -lm -o random-walk main.c 
 
 tests:
 	gcc -fopenmp -lm -o random-walk main.c 
