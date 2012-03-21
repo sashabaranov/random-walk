@@ -59,12 +59,16 @@ int main(int argc, char *argv[])
     int *grid, *stats;
     int threads_num, tid;
 
+    // for randomization:
+    unsigned short state[3];
+    unsigned int seed;
+
     // init var(add getopt later)
     dim = 2;
     N = 10;
-    cops = 1;
-    K = 500;
-    M = 100;
+    cops = 2;
+    K = 10000;
+    M = 500;
     
 
     // Memory alloc
@@ -83,14 +87,13 @@ int main(int argc, char *argv[])
     {
         regenerate(grid, grid_size, cops);
 
-        #pragma omp parallel shared(grid, stats) private(j, k, d, tid, threads_num) firstprivate(i, grid_size, K, M, N, dim, offset)
+        #pragma omp parallel shared(grid, stats) private(j, k, d, tid, threads_num, state, seed) firstprivate(i, grid_size, K, M, N, dim, offset)
         {
             tid  = omp_get_thread_num();
             threads_num = omp_get_num_threads();
 
             // seed magic
-            unsigned short state[3];
-            unsigned int seed = time(NULL) + (unsigned int) omp_get_thread_num();
+            seed = time(NULL) + (unsigned int) omp_get_thread_num();
             memcpy(state, &seed, sizeof(seed));
 
             int* drunkards = calloc(M/threads_num, sizeof(int)); //drunkards offsets
@@ -126,6 +129,7 @@ int main(int argc, char *argv[])
                 }
                 if(count == 0) go_flag = 0;
             }
+            free(drunkards);
         }
     }
 
@@ -147,4 +151,7 @@ int main(int argc, char *argv[])
 
     double end = omp_get_wtime();
     printf("TIME : %s %f\n", getenv("OMP_NUM_THREADS"), end - start);
+
+    free(grid);
+    return 0;
 }
