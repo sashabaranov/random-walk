@@ -4,7 +4,7 @@
 #include <math.h>
 #include <omp.h>
 #include <time.h>
-
+#include <unistd.h>
 
 int rnd(int min, int max, unsigned short *state)
 {
@@ -26,8 +26,18 @@ void regenerate(int* grid, int grid_size, int cops)
 {
     memset(grid, 0, grid_size * sizeof(int));
 
-    int i,j;
-    for(i = 0; i < cops; ++i) grid[rand() % grid_size] = 1;
+    int pos, count = 0;
+    while(count < cops)
+    {
+         pos = rand() % grid_size;
+
+         if(grid[pos] != 1)
+         {
+            grid[pos] = 1;
+            ++ count;
+         }
+    }
+    //for(i = 0; i < cops; ++i) grid[rand() % grid_size] = 1;
 
     /*printf("Regenerated! \n data = {");
     for(i = 0; i < 10; i++) 
@@ -54,22 +64,49 @@ int main(int argc, char *argv[])
     int cops; // cops count
     int K;    // cops regenerations count
     int M;    // total simulations count per grid regeneration (Totally K*M simulations)
-    int i, j, k, d; // temp vars
-    int offset = 0 ; // drunkard offset in array
+    int i, j; // temp vars
     int *grid, *stats;
     int threads_num, tid;
+    int go_flag, count;
+    int shout;
 
     // for randomization:
     unsigned short state[3];
     unsigned int seed;
 
     // init var(add getopt later)
-    dim = 2;
-    N = 10;
-    cops = 2;
-    K = 10000;
-    M = 500;
+    dim = 3;
+    N = 3;
+    cops = 16;
+    K = 2000;
+    M = 100000;
     
+    int res = 0;
+
+    char* usage = "Usage:\n"
+                  "\t-d <number>\tDimensions count\n"
+                  "\t-N <number>\tGrid size\n"
+                  "\t-c <number>\tCops count\n"
+                  "\t-K <number>\tGrid regenerations count\n"
+                  "\t-M <number>\tSimulations count per regeneration\n"
+                  "\t-s\t\tShouting between drunkards\n";
+
+    while((res = getopt(argc, argv, "d:N:c:K:M:sh")) != -1)
+    {
+        switch(res)
+        {
+            case 'd': dim   = atoi(optarg); break;
+            case 'N': N     = atoi(optarg); break;
+            case 'c': cops  = atoi(optarg); break;
+            case 'K': K     = atoi(optarg); break;
+            case 'M': M     = atoi(optarg); break;
+            case 's': shout = 1; break;
+            case 'h': printf("%s", usage); return 0;
+        }
+    }
+
+
+
 
     // Memory alloc
     grid_size = pow(N, dim);
@@ -85,9 +122,10 @@ int main(int argc, char *argv[])
 
     for(i = 0; i < K; ++i)
     {
+        if(i%100 == 0) printf("Sim #%d\n", i);
         regenerate(grid, grid_size, cops);
 
-        #pragma omp parallel shared(grid, stats) private(j, k, d, tid, threads_num, state, seed) firstprivate(i, grid_size, K, M, N, dim, offset)
+        #pragma omp parallel shared(grid, stats) private(j, tid, threads_num, state, seed, go_flag, count) firstprivate(i, grid_size, K, M, N, dim)
         {
             tid  = omp_get_thread_num();
             threads_num = omp_get_num_threads();
@@ -97,8 +135,7 @@ int main(int argc, char *argv[])
             memcpy(state, &seed, sizeof(seed));
 
             int* drunkards = calloc(M/threads_num, sizeof(int)); //drunkards offsets
-            int go_flag = M/threads_num; // keep simulating
-            int count; // counting not dead
+            go_flag = M/threads_num; // keep simulating
 
             while(go_flag)
             {
@@ -146,11 +183,13 @@ int main(int argc, char *argv[])
     stddev = sqrt(stddev / K);
 
 
-    printf("STATS: %f +/- %f\n", avg, stddev);
+    //printf("STATS: %f +/- %f\n", avg, stddev);
 
 
     double end = omp_get_wtime();
-    printf("TIME : %s %f\n", getenv("OMP_NUM_THREADS"), end - start);
+    printf("%d %f +/- %f %f %d %d\n", cops, avg, stddev, end - start, M, K);
+
+    //printf("TIME : %s %f\n", getenv("OMP_NUM_THREADS"), end - start);
 
     free(grid);
     return 0;
