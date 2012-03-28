@@ -75,11 +75,11 @@ int main(int argc, char *argv[])
     unsigned int seed;
 
     // init var(add getopt later)
-    dim = 3;
-    N = 3;
-    cops = 16;
-    K = 2000;
-    M = 100000;
+    /*dim = 3;
+    N = 4;
+    cops = 1;
+    K = 500;
+    M = 100000;*/
     
     int res = 0;
 
@@ -107,7 +107,6 @@ int main(int argc, char *argv[])
 
 
 
-
     // Memory alloc
     grid_size = pow(N, dim);
 
@@ -122,7 +121,7 @@ int main(int argc, char *argv[])
 
     for(i = 0; i < K; ++i)
     {
-        if(i%100 == 0) printf("Sim #%d\n", i);
+        //if(i%100 == 0) printf("Sim #%d\n", i);
         regenerate(grid, grid_size, cops);
 
         #pragma omp parallel shared(grid, stats) private(j, tid, threads_num, state, seed, go_flag, count) firstprivate(i, grid_size, K, M, N, dim)
@@ -172,7 +171,7 @@ int main(int argc, char *argv[])
 
     double avg, stddev;
 
-    //for(i = 0; i < K; ++i) printf("%f\n", (float)stats[i]/M);
+    //for(i = 0; i < K; ++i) printf("%d\n", stats[i]);
     
     for(i = 0; i < K; ++i) avg += (double) stats[i] / M;
     
@@ -187,7 +186,7 @@ int main(int argc, char *argv[])
 
 
     double end = omp_get_wtime();
-    printf("%d %f +/- %f %f %d %d\n", cops, avg, stddev, end - start, M, K);
+    printf("%d %f %f %f %d %d\n", cops, avg, stddev, end - start, M, K);
 
     //printf("TIME : %s %f\n", getenv("OMP_NUM_THREADS"), end - start);
 
