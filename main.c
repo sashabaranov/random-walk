@@ -88,8 +88,7 @@ int main(int argc, char *argv[])
                   "\t-N <number>\tGrid size\n"
                   "\t-c <number>\tCops count\n"
                   "\t-K <number>\tGrid regenerations count\n"
-                  "\t-M <number>\tSimulations count per regeneration\n"
-                  "\t-s\t\tShouting between drunkards\n";
+                  "\t-M <number>\tSimulations count per regeneration\n";
 
     while((res = getopt(argc, argv, "d:N:c:K:M:sh")) != -1)
     {
@@ -100,7 +99,6 @@ int main(int argc, char *argv[])
             case 'c': cops  = atoi(optarg); break;
             case 'K': K     = atoi(optarg); break;
             case 'M': M     = atoi(optarg); break;
-            case 's': shout = 1; break;
             case 'h': printf("%s", usage); return 0;
         }
     }

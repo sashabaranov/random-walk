@@ -2,7 +2,7 @@ from commands import getstatusoutput
 from math import sqrt
 
 
-for N in range(7,10):
+for N in range(30, 100, 10):
     print "# %dx%dx%d :" % (N, N, N)
     
     p = 1

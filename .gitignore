@@ -1,3 +1,7 @@
 *.dSYM
 a.out
 random-walk
+Text.aux
+Text.log
+Text.pdf
+
