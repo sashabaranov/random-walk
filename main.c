@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    double avg, stddev;
+    double avg = 0, stddev = 0;
 
     //for(i = 0; i < K; ++i) printf("%d\n", stats[i]);
     
