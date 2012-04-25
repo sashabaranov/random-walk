@@ -68,19 +68,11 @@ int main(int argc, char *argv[])
     int *grid, *stats;
     int threads_num, tid;
     int go_flag, count;
-    int shout;
 
     // for randomization:
     unsigned short state[3];
     unsigned int seed;
 
-    // init var(add getopt later)
-    /*dim = 3;
-    N = 4;
-    cops = 1;
-    K = 500;
-    M = 100000;*/
-    
     int res = 0;
 
     char* usage = "Usage:\n"
@@ -88,9 +80,10 @@ int main(int argc, char *argv[])
                   "\t-N <number>\tGrid size\n"
                   "\t-c <number>\tCops count\n"
                   "\t-K <number>\tGrid regenerations count\n"
-                  "\t-M <number>\tSimulations count per regeneration\n";
+                  "\t-M <number>\tSimulations count per regeneration\n"
+                  "\t-s\t\tShouting between drunkards\n";
 
-    while((res = getopt(argc, argv, "d:N:c:K:M:sh")) != -1)
+    while((res = getopt(argc, argv, "d:N:c:K:M:h")) != -1)
     {
         switch(res)
         {
@@ -156,6 +149,7 @@ int main(int argc, char *argv[])
                         if(drunkards[j] == grid_size) 
                         {
                             //printf("%d ACHIEVE %d\n", tid,  drunkards[j]);
+                            #pragma omp atomic
                             stats[i] += 1;
                             drunkards[j] = -1;
                         }
@@ -167,7 +161,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    double avg = 0, stddev = 0;
+    double avg, stddev;
 
     //for(i = 0; i < K; ++i) printf("%d\n", stats[i]);
     
